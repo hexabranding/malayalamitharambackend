@@ -28,9 +28,14 @@ const upload = multer({
   },
 });
 
-router.post("/image", authMiddleware, upload.single("image"), (req, res) => {
+router.post("/image", authMiddleware, upload.single("image"), (req, res, next) => {
   if (!req.file) return res.status(400).json({ error: "No image uploaded" });
   res.json({ url: `/uploads/${req.file.filename}` });
+}, (err, _req, res, _next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({ error: "File too large. Maximum size is 5 MB." });
+  }
+  res.status(400).json({ error: err.message || "Upload failed" });
 });
 
 module.exports = router;
