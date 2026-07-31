@@ -47,6 +47,7 @@ app.use((req, _res, next) => {
   next();
 });
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/news", newsRoutes);
 app.use("/api/categories", categoriesRoutes);
@@ -58,19 +59,24 @@ app.use("/api/ads", adsRoutes);
 app.use("/api/upload", uploadRoutes);
 
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "Malayalamithram API", timestamp: new Date().toISOString() });
+  res.json({
+    status: "ok",
+    service: "Malayalamithram API"
+  });
 });
 
-const distPath = path.join(__dirname, "..", "dist");
-app.use(express.static(distPath));
-app.get("/", (req, res) => {
-  res.json({ success: true, message: "Welcome to the Malayalamithram API",
-    health:"/api/health",
-   });
+app.get("/", (_req, res) => {
+  res.json({
+    success: true,
+    message: "Malayalamithram Backend API is running"
+  });
 });
 
+// 404
 app.use((_req, res) => {
-  res.status(404).json({ error: "API endpoint not found" });
+  res.status(404).json({
+    error: "API endpoint not found"
+  });
 });
 
 app.use((err, _req, res, _next) => {
