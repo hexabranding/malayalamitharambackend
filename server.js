@@ -63,8 +63,10 @@ app.get("/api/health", (_req, res) => {
 
 const distPath = path.join(__dirname, "..", "dist");
 app.use(express.static(distPath));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
+app.get("/", (req, res) => {
+  res.json({ success: true, message: "Welcome to the Malayalamithram API",
+    health:"/api/health",
+   });
 });
 
 app.use((_req, res) => {
