@@ -80,7 +80,7 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: "Internal server error" });
 });
 
-connectDB().then(async () => {
+async function seedInitialAdmin() {
   try {
     const bcrypt = require("bcryptjs");
     const User = require("./models/User");
@@ -102,9 +102,15 @@ connectDB().then(async () => {
   } catch (e) {
     console.log("Auto-seed skipped:", e.message);
   }
+}
 
-  app.listen(PORT, () => {
-    console.log(`\n Malayalamithram Backend running on http://localhost:${PORT}`);
-    console.log(`   Health: http://localhost:${PORT}/api/health\n`);
-  });
+// Start accepting requests immediately. MongoDB reconnects in the background,
+// which is required by Hostinger's startup health check.
+app.listen(PORT, () => {
+  console.log(`\n Malayalamithram Backend running on http://localhost:${PORT}`);
+  console.log(`   Health: http://localhost:${PORT}/api/health\n`);
+});
+
+connectDB().then((connection) => {
+  if (connection) seedInitialAdmin();
 });
