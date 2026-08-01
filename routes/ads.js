@@ -5,6 +5,7 @@ const { authMiddleware } = require("../middleware/auth");
 const router = express.Router();
 
 const DEFAULT_SLOTS = [
+  { slot: "article-top", label: "Article Top Ad (728 x 90)", title: "ലേഖനത്തിന് മുകളിലെ പരസ്യം" },
   { slot: "top-leaderboard", label: "Top Leaderboard (728 x 90)", title: "പേജ് മുകൾ പരസ്യം" },
   { slot: "mid-leaderboard", label: "Mid Leaderboard (970 x 90)", title: "പേജ് നടുവിലെ പരസ്യം" },
   { slot: "bottom-leaderboard", label: "Bottom Leaderboard (728 x 90)", title: "പേജ് താഴെ പരസ്യം" },

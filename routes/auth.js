@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.post("/login", async (req, res) => {
   try {
+    if (!JWT_SECRET) return res.status(503).json({ error: "Authentication is not configured" });
     const { username, password } = req.body;
     if (!username || !password) {
       return res.status(400).json({ error: "Username and password are required" });

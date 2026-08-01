@@ -30,11 +30,7 @@ app.use(cors({
       "https://demo.malayalamitharam.in",
       "https://malayalamitharam.in",
     ].filter(Boolean);
-    if (allowed.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(null, true);
-    }
+    callback(null, allowed.includes(origin));
   },
   credentials: true,
 }));
@@ -89,8 +85,9 @@ connectDB().then(async () => {
     const bcrypt = require("bcryptjs");
     const User = require("./models/User");
     const userExists = await User.findOne({ username: "admin" });
-    if (!userExists) {
-      const passwordHash = await bcrypt.hash("Admin@123", 10);
+    const initialPassword = process.env.ADMIN_INITIAL_PASSWORD;
+    if (!userExists && initialPassword) {
+      const passwordHash = await bcrypt.hash(initialPassword, 10);
       await User.create({
         username: "admin",
         email: "admin@malayalamithram.in",
@@ -98,7 +95,9 @@ connectDB().then(async () => {
         role: "admin",
         name: "Malayalamithram Admin",
       });
-      console.log("Default admin user created (admin / Admin@123)");
+      console.log("Initial admin user created");
+    } else if (!userExists) {
+      console.warn("No admin user exists. Set ADMIN_INITIAL_PASSWORD to create the initial admin.");
     }
   } catch (e) {
     console.log("Auto-seed skipped:", e.message);
