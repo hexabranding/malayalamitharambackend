@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/auth");
@@ -54,10 +55,13 @@ app.use("/api/settings", settingsRoutes);
 app.use("/api/ads", adsRoutes);
 app.use("/api/upload", uploadRoutes);
 
-app.get("/api/health", (_req, res) => {
+app.get("/api/health", async (_req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStates = { 0: "disconnected", 1: "connected", 2: "connecting", 3: "disconnecting" };
   res.json({
     status: "ok",
-    service: "Malayalamithram API"
+    service: "Malayalamithram API",
+    db: dbStates[dbState] || "unknown",
   });
 });
 
