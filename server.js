@@ -30,6 +30,8 @@ app.use(cors({
       process.env.ALLOWED_ORIGIN,
       "https://demo.malayalamitharam.in",
       "https://malayalamitharam.in",
+      "https://malayalamithram.in",
+      "https://demo.malayalamithram.in",
     ].filter(Boolean);
     callback(null, allowed.includes(origin));
   },

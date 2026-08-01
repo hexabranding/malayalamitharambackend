@@ -4,8 +4,8 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/malayalami
 
 async function connectDB() {
   try {
-    const conn = await mongoose.connect(MONGO_URI, { tls: true });
-    console.log("\n MongoDB connected: " + conn.connection.host);
+    const conn = await mongoose.connect(MONGO_URI);
+    console.log("\n MongoDB connected: " + conn.connection.host + "/" + conn.connection.name);
     return conn;
   } catch (err) {
     console.error(" MongoDB connection error: " + err.message);
