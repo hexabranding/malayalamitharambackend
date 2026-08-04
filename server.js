@@ -14,6 +14,7 @@ const authorsRoutes = require("./routes/authors");
 const settingsRoutes = require("./routes/settings");
 const adsRoutes = require("./routes/ads");
 const uploadRoutes = require("./routes/upload");
+const Ad = require("./models/Ad");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -117,6 +118,15 @@ app.listen(PORT, () => {
   console.log(`   Health: http://localhost:${PORT}/api/health\n`);
 });
 
-connectDB().then((connection) => {
-  if (connection) seedInitialAdmin();
+connectDB().then(async (connection) => {
+  if (connection) {
+    seedInitialAdmin();
+    try {
+      await Ad.init();
+      await Ad.collection.dropIndex("slot_1");
+      console.log("Dropped old unique index on Ad.slot");
+    } catch (_) {
+      console.log("No old unique index to drop on Ad.slot");
+    }
+  }
 });
