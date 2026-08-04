@@ -73,7 +73,10 @@ router.post("/", authMiddleware, async (req, res) => {
     await ad.save();
     res.status(201).json(ad.toJSON());
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    if (err.code === 11000) {
+      return res.status(400).json({ error: "An ad for this slot already exists. Delete it first or use a different slot." });
+    }
+    res.status(500).json({ error: "Server error: " + err.message });
   }
 });
 

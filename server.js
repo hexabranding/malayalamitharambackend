@@ -122,11 +122,14 @@ connectDB().then(async (connection) => {
   if (connection) {
     seedInitialAdmin();
     try {
-      await Ad.init();
-      await Ad.collection.dropIndex("slot_1");
-      console.log("Dropped old unique index on Ad.slot");
-    } catch (_) {
-      console.log("No old unique index to drop on Ad.slot");
+      const indexes = await Ad.collection.listIndexes().toArray();
+      const hasSlotIndex = indexes.some((idx) => idx.key && idx.key.slot === 1);
+      if (hasSlotIndex) {
+        await Ad.collection.dropIndex("slot_1");
+        console.log("Dropped old unique index on Ad.slot");
+      }
+    } catch (err) {
+      console.log("Index cleanup skipped:", err.message);
     }
   }
 });
