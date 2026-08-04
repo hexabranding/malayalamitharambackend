@@ -51,6 +51,7 @@ router.post("/seed", authMiddleware, async (req, res) => {
       { key: "primary_color", value: "#bd1d25", label: "Primary Color", type: "color" },
       { key: "secondary_color", value: "#e6b313", label: "Secondary Color", type: "color" },
       { key: "articles_per_page", value: 20, label: "Articles Per Page", type: "number" },
+      { key: "carousel_category_width", value: 5, label: "Carousel Category Badge Width (px)", type: "number" },
     ];
     for (const d of defaults) {
       await Setting.findOneAndUpdate({ key: d.key }, d, { upsert: true, new: true });
