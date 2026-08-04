@@ -19,6 +19,7 @@ const articleSchema = new mongoose.Schema({
   media: { type: String, default: "standard" },
   videoUrl: { type: String, default: "" },
   views: { type: Number, default: 0 },
+  likes: { type: Number, default: 0 },
   comments: { type: Number, default: 0 },
   categoryMl: { type: String, default: "" },
   readTime: { type: String, default: "3 മിനിറ്റ്" },

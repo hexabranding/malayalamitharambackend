@@ -74,7 +74,7 @@ router.get("/:slug", async (req, res) => {
 
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { title, titleEn, category, subcategory, content, excerpt, image, tags, featured, breaking, published, author, body, media, videoUrl, categoryMl, readTime, backgroundColor } = req.body;
+    const { title, titleEn, category, subcategory, content, excerpt, image, tags, featured, breaking, published, author, body, media, videoUrl, categoryMl, readTime, backgroundColor, likes, views } = req.body;
     if (!title || !category || !content) {
       return res.status(400).json({ error: "title, category, and content are required" });
     }
@@ -101,7 +101,8 @@ router.post("/", authMiddleware, async (req, res) => {
       videoUrl: videoUrl || "",
       categoryMl: categoryMl || "",
       readTime: readTime || "3 മിനിറ്റ്",
-      views: 0,
+      views: views || 0,
+      likes: likes || 0,
       comments: 0,
       backgroundColor: backgroundColor || getRandomBgColor(),
     });
