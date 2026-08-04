@@ -77,22 +77,23 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-router.put("/:slot", authMiddleware, async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const ad = await Ad.findOneAndUpdate(
-      { slot: req.params.slot },
-      { ...req.body, slot: req.params.slot },
-      { new: true, upsert: true, runValidators: true }
+    const ad = await Ad.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, _id: req.params.id },
+      { new: true, runValidators: true }
     );
+    if (!ad) return res.status(404).json({ error: "Ad not found" });
     res.json(ad.toJSON());
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 });
 
-router.delete("/:slot", authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
-    const ad = await Ad.findOneAndDelete({ slot: req.params.slot });
+    const ad = await Ad.findByIdAndDelete(req.params.id);
     if (!ad) return res.status(404).json({ error: "Ad not found" });
     res.json({ message: "Ad deleted" });
   } catch (err) {
