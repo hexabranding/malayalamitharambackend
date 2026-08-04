@@ -17,19 +17,6 @@ const uploadRoutes = require("./routes/upload");
 const Ad = require("./models/Ad");
 const Image = require("./models/Image");
 
-// Serve uploaded images from MongoDB if the file is not on disk.
-app.get("/uploads/:filename", async (req, res) => {
-  try {
-    const img = await Image.findOne({ filename: req.params.filename });
-    if (!img || !img.data) return res.status(404).json({ error: "Image not found" });
-    res.set("Content-Type", img.contentType || "application/octet-stream");
-    res.set("Cache-Control", "public, max-age=31536000, immutable");
-    return res.send(img.data);
-  } catch (err) {
-    return res.status(500).json({ error: "Server error" });
-  }
-});
-
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -55,6 +42,19 @@ app.use(cors({
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Serve uploaded images from MongoDB if the file is not on disk.
+app.get("/uploads/:filename", async (req, res) => {
+  try {
+    const img = await Image.findOne({ filename: req.params.filename });
+    if (!img || !img.data) return res.status(404).json({ error: "Image not found" });
+    res.set("Content-Type", img.contentType || "application/octet-stream");
+    res.set("Cache-Control", "public, max-age=31536000, immutable");
+    return res.send(img.data);
+  } catch (err) {
+    return res.status(500).json({ error: "Server error" });
+  }
+});
 
 app.use((req, _res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
