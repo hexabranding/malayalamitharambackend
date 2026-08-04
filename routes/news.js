@@ -79,7 +79,7 @@ router.post("/", authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "title, category, and content are required" });
     }
 
-    const slug = slugify(titleEn || title) + "-" + Date.now().toString(36);
+    const slug = slugify(category) + "-" + slugify(titleEn || title) + "-" + Date.now().toString(36);
 
     const article = await Article.create({
       slug,

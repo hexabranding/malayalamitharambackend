@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const adSchema = new mongoose.Schema({
-  slot: { type: String, required: true, unique: true, index: true },
+  slot: { type: String, required: true, index: true },
   title: { type: String, default: "" },
   image: { type: String, default: "" },
   link: { type: String, default: "" },

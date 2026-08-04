@@ -40,11 +40,18 @@ router.get("/slots", async (_req, res) => {
   res.json(DEFAULT_SLOTS);
 });
 
-router.get("/:slot", async (req, res) => {
+router.get("/batch", async (req, res) => {
   try {
-    const ad = await Ad.findOne({ slot: req.params.slot, active: true });
-    if (!ad) return res.json(null);
-    res.json(ad.toJSON());
+    const slotsParam = req.query.slots;
+    if (!slotsParam) return res.status(400).json({ error: "slots query param is required" });
+    const slots = slotsParam.split(",");
+    const ads = await Ad.find({ slot: { $in: slots }, active: true });
+    const adsMap = {};
+    ads.forEach(a => {
+      if (!adsMap[a.slot]) adsMap[a.slot] = [];
+      adsMap[a.slot].push(a.toJSON());
+    });
+    res.json(adsMap);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
@@ -55,18 +62,15 @@ router.post("/", authMiddleware, async (req, res) => {
     const { slot, title, image, link, active, label } = req.body;
     if (!slot) return res.status(400).json({ error: "slot is required" });
 
-    const ad = await Ad.findOneAndUpdate(
-      { slot },
-      {
-        slot,
-        title: title || "",
-        image: image || "",
-        link: link || "",
-        active: active !== false,
-        label: label || "",
-      },
-      { new: true, upsert: true, runValidators: true }
-    );
+    const ad = new Ad({
+      slot,
+      title: title || "",
+      image: image || "",
+      link: link || "",
+      active: active !== false,
+      label: label || "",
+    });
+    await ad.save();
     res.status(201).json(ad.toJSON());
   } catch (err) {
     res.status(500).json({ error: "Server error" });
