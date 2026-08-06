@@ -23,7 +23,9 @@ router.get("/", async (req, res) => {
     const { category, subcategory, featured, breaking, limit = 50, page = 1, search } = req.query;
     const filter = {};
 
-    if (category) filter.category = category;
+    if (category) {
+      filter.$or = [{ category: category }, { categories: category }];
+    }
     if (subcategory) filter.subcategory = subcategory;
     if (featured !== undefined) filter.featured = featured === "true";
     if (breaking !== undefined) filter.breaking = breaking === "true";
@@ -74,18 +76,20 @@ router.get("/:slug", async (req, res) => {
 
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { title, titleEn, category, subcategory, content, excerpt, image, tags, featured, breaking, published, author, body, media, videoUrl, categoryMl, readTime, backgroundColor, likes, views } = req.body;
+    const { title, titleEn, category, categories, subcategory, content, excerpt, image, tags, featured, breaking, published, author, body, media, videoUrl, categoryMl, readTime, backgroundColor, likes, views, mainNews, popular } = req.body;
     if (!title || !category || !content) {
       return res.status(400).json({ error: "title, category, and content are required" });
     }
 
     const slug = slugify(category) + "-" + slugify(titleEn || title) + "-" + Date.now().toString(36);
+    const articleCategories = (categories && categories.length > 0) ? categories : [category];
 
     const article = await Article.create({
       slug,
       title,
       titleEn: titleEn || "",
       category,
+      categories: articleCategories,
       subcategory: subcategory || "",
       author: author || req.user.name,
       date: new Date().toISOString().split("T")[0],
@@ -96,6 +100,8 @@ router.post("/", authMiddleware, async (req, res) => {
       tags: tags || [],
       featured: featured === true,
       breaking: breaking === true,
+      mainNews: mainNews === true,
+      popular: popular === true,
       published: published !== false,
       media: media || "standard",
       videoUrl: videoUrl || "",
