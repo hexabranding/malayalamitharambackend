@@ -1,3 +1,6 @@
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
@@ -16,25 +19,28 @@ const adsRoutes = require("./routes/ads");
 const uploadRoutes = require("./routes/upload");
 const Ad = require("./models/Ad");
 const Image = require("./models/Image");
+const { startWarmup } = require("./utils/warmTranslations");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || process.env.NODE_ENV !== "production") {
       return callback(null, true);
     }
-    const allowed = [
-      FRONTEND_URL,
-      process.env.ALLOWED_ORIGIN,
-      "https://demo.malayalamitharam.in",
-      "https://malayalamitharam.in",
-      "https://malayalamithram.in",
-      "https://demo.malayalamithram.in",
-    ].filter(Boolean);
+   const allowed = [
+  FRONTEND_URL,
+  process.env.ALLOWED_ORIGIN,
+  "https://demo.malayalamitharam.in",
+  "https://malayalamitharam.in",
+  "https://malayalamithram.in",
+  "https://demo.malayalamithram.in",
+  "https://malayalamithramonline.com",
+  "https://www.malayalamithramonline.com",
+].filter(Boolean);
     callback(null, allowed.includes(origin));
   },
   credentials: true,
@@ -128,8 +134,8 @@ async function seedInitialAdmin() {
 // Start accepting requests immediately. MongoDB reconnects in the background,
 // which is required by Hostinger's startup health check.
 app.listen(PORT, () => {
-  console.log(`\n Malayalamithram Backend running on http://localhost:${PORT}`);
-  console.log(`   Health: http://localhost:${PORT}/api/health\n`);
+  console.log(`\n Malayalamithram Backend running on port ${PORT}`);
+  console.log(`   Health: /api/health\n`);
 });
 
 connectDB().then(async (connection) => {
@@ -145,5 +151,6 @@ connectDB().then(async (connection) => {
     } catch (err) {
       console.log("Index cleanup skipped:", err.message);
     }
+    startWarmup();
   }
 });

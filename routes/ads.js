@@ -59,6 +59,19 @@ router.get("/batch", async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    let ad = /^[0-9a-fA-F]{24}$/.test(req.params.id)
+      ? await Ad.findById(req.params.id)
+      : null;
+    if (!ad) ad = await Ad.findOne({ slot: req.params.id, active: true });
+    if (!ad) return res.status(404).json({ error: "Ad not found" });
+    res.json(ad.toJSON());
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { slot, title, image, link, active, label } = req.body;

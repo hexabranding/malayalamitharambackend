@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 
 const articleSchema = new mongoose.Schema({
   slug: { type: String, unique: true, index: true },
+  // Previous public URLs are retained solely for permanent redirects.
+  legacySlugs: [{ type: String, index: true }],
+  engSlug: { type: String, default: "", index: true, sparse: true },
   title: { type: String, required: true },
   titleEn: { type: String, default: "" },
   category: { type: String, required: true, index: true },
@@ -10,15 +13,23 @@ const articleSchema = new mongoose.Schema({
   author: { type: String, default: "Staff Reporter" },
   date: { type: String },
   image: { type: String, default: "/images/blog/1.jpg" },
+  gallery: [{ type: String }],
   excerpt: { type: String, default: "" },
   content: { type: String, default: "" },
   body: [{ type: String }],
   tags: [{ type: String }],
   featured: { type: Boolean, default: false, index: true },
   breaking: { type: Boolean, default: false, index: true },
+  mainNews: { type: Boolean, default: false, index: true },
+  popular: { type: Boolean, default: false, index: true },
   published: { type: Boolean, default: true, index: true },
   media: { type: String, default: "standard" },
   videoUrl: { type: String, default: "" },
+  relatedVideos: [{
+    title: { type: String, default: "" },
+    videoUrl: { type: String, required: true },
+    thumbnail: { type: String, default: "" }
+  }],
   views: { type: Number, default: 0 },
   likes: { type: Number, default: 0 },
   comments: { type: Number, default: 0 },
